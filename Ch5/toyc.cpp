@@ -20,12 +20,10 @@
 #include "mlir/Pass/PassManager.h"
 #include "mlir/Transforms/Passes.h"
 
-#include "llvm/ADT/StringRef.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/ErrorOr.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/SourceMgr.h"
-#include "llvm/Support/raw_ostream.h"
 
 using namespace toy;
 namespace cl = llvm::cl;
@@ -41,8 +39,8 @@ enum InputType { Toy, MLIR };
 
 } // namespace
 static cl::opt<enum InputType> inputType(
-    "x", cl::init(Toy), cl::desc("Decided the kind of output desired"),
-    cl::values(clEnumValN(Toy, "toy", "load the input file as a Toy source.")),
+    "x", cl::init(Toy), cl::desc("Decide the kind of output desired"),
+    cl::values(clEnumValN(Toy, "toy", "load the input file as a Toy source")),
     cl::values(clEnumValN(MLIR, "mlir", "load the input file as MLIR file")));
 
 namespace {
@@ -186,7 +184,7 @@ int main(int argc, char **argv) {
         case Action::DumpMLIRAffine:
             return dumpMLIR();
         default:
-            llvm::errs() << "No action specfied (parsing only?), use -emit=<action>\n";
+            llvm::errs() << "No action specified (parsing only?), use -emit=<action>\n";
     }
 
     return 0;

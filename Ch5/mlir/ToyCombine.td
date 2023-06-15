@@ -1,6 +1,6 @@
 //===---- ToyCombine.td - Pattern Match Optimization for Toy - *- tablegen -* ----===//
 //
-// Difines language-sepecific pattern match optimizations for Toy using
+// Defines language-specific pattern match optimizations for Toy using
 // Declarative Rewrite Rule (DRR) specified using TableGen records.
 //
 //===-----------------------------------------------------------------------------===//

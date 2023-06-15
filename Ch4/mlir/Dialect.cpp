@@ -388,7 +388,7 @@ void MulOp::print(mlir::OpAsmPrinter &p) { printBinaryOp(p, *this); }
 void MulOp::inferShapes() { getResult().setType(getLhs().getType()); }
 
 //===------------------------------------------===//
-// Return Op
+// ReturnOp
 //===------------------------------------------===//
 
 mlir::LogicalResult ReturnOp::verify() {

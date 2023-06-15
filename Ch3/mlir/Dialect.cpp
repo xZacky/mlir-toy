@@ -252,7 +252,7 @@ mlir::ParseResult MulOp::parse(mlir::OpAsmParser &parser,
 void MulOp::print(mlir::OpAsmPrinter &p) { printBinaryOp(p, *this); }
 
 //===------------------------------------------===//
-// Return Op
+// ReturnOp
 //===------------------------------------------===//
 
 mlir::LogicalResult ReturnOp::verify() {
