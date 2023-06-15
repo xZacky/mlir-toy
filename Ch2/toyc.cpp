@@ -15,12 +15,10 @@
 #include "mlir/IR/Verifier.h"
 #include "mlir/Parser/Parser.h"
 
-#include "llvm/ADT/StringRef.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/ErrorOr.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/SourceMgr.h"
-#include "llvm/Support/raw_ostream.h"
 
 using namespace toy;
 namespace cl = llvm::cl;
@@ -131,7 +129,7 @@ int main(int argc, char **argv) {
         case Action::DumpMLIR:
             return dumpMLIR();
         default:
-            llvm::errs() << "No action specfied (parsing only?), use -emit=<action>\n";
+            llvm::errs() << "No action specified (parsing only?), use -emit=<action>\n";
     }
 
     return 0;

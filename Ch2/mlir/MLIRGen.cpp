@@ -35,7 +35,7 @@ class MLIRGenImpl {
 public:
     MLIRGenImpl(mlir::MLIRContext &context) : builder(&context) {}
 
-    /// Public API: convert  the AST for a Toy module (source file) to an MLIR
+    /// Public API: convert the AST for a Toy module (source file) to an MLIR
     /// Module operation.
     mlir::ModuleOp mlirGen(ModuleAST &moduleAST) {
         // We create an empty MLIR module and codegen functions one at a time and
@@ -96,8 +96,7 @@ private:
         llvm::SmallVector<mlir::Type, 4> argTypes(proto.getArgs().size(),
                                                   getType(VarType{}));
         auto funcType = builder.getFunctionType(argTypes, std::nullopt);
-        return builder.create<FuncOp>(location, proto.getName(),
-                                      funcType);
+        return builder.create<FuncOp>(location, proto.getName(), funcType);
     }
 
     /// Emit a new function and add it to the MLIR module.
@@ -158,9 +157,9 @@ private:
         // the operation itself. For example if the expression is a `a + foo(a)`
         // 1) First it will visiting the LHS, which will return a reference to the
         //    value holding `a`. This value should have been emitted at declaration
-        //    time and registered in the symbols table, so nothing would be
-        //    codegen'd. If the value is not in the symbol table, an error has been
-        //    emitted and nullptr is returned.
+        //    time and registered in the symbol table, so nothing would be codegen'd.
+        //    If the value is not in the symbol table, an error has been emitted and
+        //    nullptr is returned.
         // 2) Then the RHS is visited (recursively) and a call to `foo` is emitted
         //    and the result value is returned. If an error occurs we get a nullptr
         //    and propagate.
@@ -174,10 +173,12 @@ private:
         auto location = loc(binop.loc());
 
         // Derive the operation name from the binary operator. At the moment we only
-        // support '+' and '*'.
+        // support '+', '-' and '*'.
         switch (binop.getOp()) {
         case '+':
             return builder.create<AddOp>(location, lhs, rhs);
+        case '-':
+            return builder.create<SubOp>(location, lhs, rhs);
         case '*':
             return builder.create<MulOp>(location, lhs, rhs);
         }
@@ -186,7 +187,7 @@ private:
         return nullptr;
     }
 
-    /// This is a reference to a variable in an exxpression. The variable is
+    /// This is a reference to a variable in an expression. The variable is
     /// expected to have been declared and so should have a value in the symbol
     /// table, otherwise emit an error and return nullptr.
     mlir::Value mlirGen(VariableExprAST &expr) {
@@ -198,7 +199,7 @@ private:
         return nullptr;
     }
 
-    /// Emi a return operation. This will return failure if any generation fails.
+    /// Emit a return operation. This will return failure if any generation fails.
     mlir::LogicalResult mlirGen(ReturnExprAST &ret) {
         auto location = loc(ret.loc());
 
@@ -229,9 +230,11 @@ private:
     /// Example, the source level statement:
     ///   var a<2, 3> = [[1, 2, 3], [4, 5, 6]];
     /// will be converted to:
-    ///   %0 = "toy.constant"() {value: dense<tensor<2x3xf64>,
+    ///   %0 = toy.constant dense<
     ///     [[1.000000e+00, 2.000000e+00, 3.000000e+00],
-    ///       4.000000e+00, 5.000000e+00, 6.000000e+00]]} : () -> tensor<2x3xf64>
+    ///       4.000000e+00, 5.000000e+00, 6.000000e+00]]
+    ///   > : tensor<2x3xf64>
+    ///   %1 = toy.reshape(%0 : tensor<2x3xf64>) to tensor<2x3xf64>
     ///
     mlir::Value mlirGen(LiteralExprAST &lit) {
         auto type = getType(lit.getDims());
@@ -309,7 +312,7 @@ private:
         return builder.create<GenericCallOp>(location, callee, operands);
     }
 
-    /// Emit a print expression. It emits specfic operations for two builtins:
+    /// Emit a print expression. It emits specific operations for two builtins:
     /// transpose(x) and print(x).
     mlir::LogicalResult mlirGen(PrintExprAST &call) {
         auto arg = mlirGen(*call.getArg());

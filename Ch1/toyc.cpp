@@ -5,11 +5,9 @@
 //===---------------------------------------------------------===//
 
 #include "toy/Parser.h"
-#include "llvm/ADT/StringRef.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/ErrorOr.h"
 #include "llvm/Support/MemoryBuffer.h"
-#include "llvm/Support/raw_ostream.h"
 
 using namespace toy;
 namespace cl = llvm::cl;
@@ -54,7 +52,7 @@ int main(int argc, char **argv) {
             dump(*moduleAST);
             return 0;
         default:
-            llvm::errs() << "No action specfied (parsing only?), use -emit=<action>\n";
+            llvm::errs() << "No action specified (parsing only?), use -emit=<action>\n";
     }
 
     return 0;

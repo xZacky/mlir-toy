@@ -14,11 +14,11 @@
 #include "mlir/Interfaces/SideEffectInterfaces.h"
 
 /// Include the auto-generated header file containing the declaration of the toy
-/// dialect
+/// dialect.
 #include "toy/Dialect.h.inc"
 
 /// Include the auto-generated header file containing the declaration of the toy
-/// operations
+/// operations.
 #define GET_OP_CLASSES
 #include "toy/Ops.h.inc"
 

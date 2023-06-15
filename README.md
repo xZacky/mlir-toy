@@ -36,7 +36,7 @@ $ cmake -G Ninja ..
 $ ninja
 ```
 
-## Run example
+## Run Example
 
 ```
 $ cd build
