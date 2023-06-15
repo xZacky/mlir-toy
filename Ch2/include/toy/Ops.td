@@ -118,7 +118,7 @@ def SubOp : Toy_Op<"sub"> {
     // Indicate that the operation has a custom parser and printer method.
     let hasCustomAssemblyFormat = 1;
 
-    // Allow building an AddOp with from the two input operands.
+    // Allow building an SubOp with from the two input operands.
     let builders = [
         OpBuilder<(ins "Value":$lhs, "Value":$rhs)>
     ];

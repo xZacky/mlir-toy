@@ -63,7 +63,7 @@ def ConstantOp : Toy_Op<"constant", [Pure]> {
     // Indicate that the operation has a custom parser and printer method.
     let hasCustomAssemblyFormat = 1;
 
-    // Add custom build methods for the constant operation. These method populates
+    // Add custom build methods for the constant operation. These methods populate
     // the `state` that MLIR uses to create operations, i.e. these are used when
     // using `builder.create<ConstantOp>(...)`.
     let builders = [
@@ -84,8 +84,9 @@ def ConstantOp : Toy_Op<"constant", [Pure]> {
 // AddOp
 //===------------------------------------------===//
 
-def AddOp : Toy_Op<"add",
-    [Pure, DeclareOpInterfaceMethods<ShapeInferenceOpInterface>]> {
+def AddOp : Toy_Op<"add",[
+        Pure, DeclareOpInterfaceMethods<ShapeInferenceOpInterface>
+    ]> {
     let summary = "element-wise addition operation";
     let description = [{
         The "add" operation perfoms element-wise addition between two tensors.
@@ -99,6 +100,31 @@ def AddOp : Toy_Op<"add",
     let hasCustomAssemblyFormat = 1;
 
     // Allow building an AddOp with from the two input operands.
+    let builders = [
+        OpBuilder<(ins "Value":$lhs, "Value":$rhs)>
+    ];
+}
+
+//===------------------------------------------===//
+// SubOp
+//===------------------------------------------===//
+
+def SubOp : Toy_Op<"sub",[
+        Pure, DeclareOpInterfaceMethods<ShapeInferenceOpInterface>
+    ]> {
+    let summary = "element-wise subtraction operation";
+    let description = [{
+        The "sub" operation perfoms element-wise subtraction between two tensors.
+        The shapes of the tensor operands expected to match.
+    }];
+
+    let arguments = (ins F64Tensor:$lhs, F64Tensor:$rhs);
+    let results = (outs F64Tensor);
+
+    // Indicate that the operation has a custom parser and printer method.
+    let hasCustomAssemblyFormat = 1;
+
+    // Allow building an SubOp with from the two input operands.
     let builders = [
         OpBuilder<(ins "Value":$lhs, "Value":$rhs)>
     ];
@@ -134,8 +160,8 @@ def CastOp : Toy_Op<"cast", [
 //===------------------------------------------===//
 
 def FuncOp : Toy_Op<"func", [
-    DeclareOpInterfaceMethods<CallableOpInterface>, FunctionOpInterface,
-    IsolatedFromAbove
+        DeclareOpInterfaceMethods<CallableOpInterface>,
+        FunctionOpInterface, IsolatedFromAbove
     ]>{
     let summary = "user defined function operation";
     let description = [{
@@ -147,7 +173,7 @@ def FuncOp : Toy_Op<"func", [
         ```mlir
         toy.func @main() {
             %0 = toy.constant dense<5.500000e+00> : tensor<f64>
-            %1 = toy.reshape(%0 : tensro<f64>) to tensor<2x2xf64>
+            %1 = toy.reshape(%0 : tensor<f64>) to tensor<2x2xf64>
             toy.print %1 : tensor<2x2xf64>
             toy.return
         }
@@ -174,7 +200,7 @@ def FuncOp : Toy_Op<"func", [
         /// Returns the argument types of this function.
         ArrayRef<Type> getArgumentTypes() { return getFunctionType().getInputs(); }
 
-        /// Returns the result types of this function
+        /// Returns the result types of this function.
         ArrayRef<Type> getResultTypes() { return getFunctionType().getResults(); }
     }];
     let hasCustomAssemblyFormat = 1;
@@ -185,8 +211,9 @@ def FuncOp : Toy_Op<"func", [
 // GenericCallOp
 //===------------------------------------------===//
 
-def GenericCallOp : Toy_Op<"generic_call",
-    [DeclareOpInterfaceMethods<CallOpInterface>]> {
+def GenericCallOp : Toy_Op<"generic_call", [
+        DeclareOpInterfaceMethods<CallOpInterface>
+    ]> {
     let summary = "generic call operation";
     let description = [{
         Generic calls represent calls to a user defined function that needs to
@@ -224,8 +251,9 @@ def GenericCallOp : Toy_Op<"generic_call",
 //===------------------------------------------===//
 // MulOp
 //===------------------------------------------===//
-def MulOp : Toy_Op<"mul",
-    [Pure, DeclareOpInterfaceMethods<ShapeInferenceOpInterface>]> {
+def MulOp : Toy_Op<"mul",[
+        Pure, DeclareOpInterfaceMethods<ShapeInferenceOpInterface>
+    ]> {
     let summary = "element-wise multiplication operation";
     let description = [{
         The "mul" operation performs element-wise multiplication between two
@@ -268,7 +296,7 @@ def ReshapeOp : Toy_Op<"reshape", [Pure]> {
     let summary ="tensor reshape operation";
     let description = [{
         Reshape operation is transforming its tensor into a new tensor with
-        the same nnumber of elements but different shapes. For example:
+        the same number of elements but different shapes. For example:
 
         ```mlir
         %0 = toy.reshape (%arg1 : tensor<10xf64>) to tensor<5x2xf64>
@@ -292,8 +320,7 @@ def ReshapeOp : Toy_Op<"reshape", [Pure]> {
 // ReturnOp
 //===------------------------------------------===//
 
-def ReturnOp : Toy_Op<"return", [Pure, HasParent<"FuncOp">,
-                                 Terminator]>{
+def ReturnOp : Toy_Op<"return", [Pure, HasParent<"FuncOp">, Terminator]>{
     let summary = "return operation";
     let description = [{
         The "return" operation represents a return operation within a function.
@@ -334,8 +361,9 @@ def ReturnOp : Toy_Op<"return", [Pure, HasParent<"FuncOp">,
 // TransposeOp
 //===------------------------------------------===//
 
-def TransposeOp : Toy_Op<"transpose",
-    [Pure, DeclareOpInterfaceMethods<ShapeInferenceOpInterface>]> {
+def TransposeOp : Toy_Op<"transpose", [
+        Pure, DeclareOpInterfaceMethods<ShapeInferenceOpInterface>
+    ]> {
     let summary = "transpose operation";
 
     let arguments = (ins F64Tensor:$input);

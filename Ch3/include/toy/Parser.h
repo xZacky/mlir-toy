@@ -15,9 +15,6 @@
 #include "llvm/Support/raw_ostream.h"
 
 #include <map>
-#include <utility>
-#include <vector>
-#include <optional>
 
 namespace toy {
 
@@ -188,7 +185,7 @@ private:
         }
         lexer.consume(Token(')'));
 
-        // It can be a builtin call to print
+        // It can be a builtin call to print.
         if (name == "print") {
             if (args.size() != 1)
                 return parseError<ExprAST>("<single arg>", "as argument to print()");
@@ -196,7 +193,7 @@ private:
             return std::make_unique<PrintExprAST>(std::move(loc), std::move(args[0]));
         }
 
-        // Call to a user-defined function
+        // Call to a user-defined function.
         return std::make_unique<CallExprAST>(std::move(loc), name, std::move(args));
     }
 
@@ -209,7 +206,7 @@ private:
         switch (lexer.getCurToken()) {
         default:
             llvm::errs() << "unknown token '" << lexer.getCurToken()
-                         << "' when epecting an expression\n";
+                         << "' when expecting an expression\n";
             return nullptr;
         case tok_identifier:
             return parseIdentifierExpr();
@@ -232,7 +229,7 @@ private:
     /// binoprhs ::= ('+' primary)*
     std::unique_ptr<ExprAST> parseBinOpRHS(int exprPrec,
                                            std::unique_ptr<ExprAST> lhs) {
-        // If this is a binop, ind its precedence.
+        // If this is a binop, find its precedence.
         while (true) {
             int tokPrec = getTokPrecedence();
 
@@ -423,7 +420,6 @@ private:
         if (lexer.getCurToken() != ')')
             return parseError<PrototypeAST>(")", "to end function prototype");
 
-        // success.
         lexer.consume(Token(')'));
         return std::make_unique<PrototypeAST>(std::move(loc), fnName,
                                               std::move(args));
@@ -461,7 +457,7 @@ private:
         }
     }
 
-    /// Helper function to signal errors while parsing, it takes ana argument
+    /// Helper function to signal errors while parsing, it takes an argument
     /// indicating the expected token and another argument giving more context.
     /// Location is retrieved from the lexer to enrich the error message.
     template <typename R, typename T, typename U = const char *>

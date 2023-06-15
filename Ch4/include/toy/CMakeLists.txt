@@ -1,4 +1,4 @@
-# Most dialects should use add_mlir_dialect().   See examples/standalone.
+# Most dialects should use add_mlir_dialect().
 set(LLVM_TARGET_DEFINITIONS Ops.td)
 mlir_tablegen(Ops.h.inc -gen-op-decls)
 mlir_tablegen(Ops.cpp.inc -gen-op-defs)

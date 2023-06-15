@@ -1,9 +1,9 @@
-//===---------- ShapeInferencePass.cpp - Shape Inference ----------===//
+//===------------ ShapeInferencePass.cpp - Shape Inference ------------===//
 //
 // This file implements a Function level pass performing interprocedural
 // propagation of array shapes through function specialization.
 //
-//===--------------------------------------------------------------===//
+//===------------------------------------------------------------------===//
 
 #include "mlir/Pass/Pass.h"
 #include "toy/Dialect.h"

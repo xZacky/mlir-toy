@@ -12,7 +12,6 @@
 #include "Lexer.h"
 
 #include "llvm/ADT/ArrayRef.h"
-#include "llvm/ADT/StringRef.h"
 #include "llvm/Support/Casting.h"
 #include <utility>
 #include <vector>
@@ -139,7 +138,7 @@ public:
     static bool classof(const ExprAST *c) { return c->getKind() == Expr_Return; }
 };
 
-/// Expression class for a binary  operator.
+/// Expression class for a binary operator.
 class BinaryExprAST : public ExprAST {
     char op;
     std::unique_ptr<ExprAST> lhs, rhs;
@@ -222,7 +221,7 @@ public:
     ExprASTList *getBody() { return body.get(); }
 };
 
-/// This class represents a list of functions to be processed together
+/// This class represents a list of functions to be processed together.
 class ModuleAST {
     std::vector<FunctionAST> functions;
 

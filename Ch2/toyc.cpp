@@ -35,7 +35,7 @@ enum InputType { Toy, MLIR };
 } // namespace
 static cl::opt<enum InputType> inputType(
     "x", cl::init(Toy), cl::desc("Decide the kind of output desired"),
-    cl::values(clEnumValN(Toy, "toy", "load the input file as a Toy source.")),
+    cl::values(clEnumValN(Toy, "toy", "load the input file as a Toy source")),
     cl::values(clEnumValN(MLIR, "mlir", "load the input file as MLIR file")));
 
 namespace {

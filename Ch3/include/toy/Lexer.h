@@ -65,9 +65,9 @@ public:
     Token getNextToken() { return curTok = getTok(); }
 
     /// Move to the next Token in the stream, asserting on the current Token
-    /// matching the expection.
+    /// matching the expectation.
     void consume(Token tok) {
-        assert(tok == curTok && "consume Token mismatch expection");
+        assert(tok == curTok && "consume Token mismatch expectation");
         getNextToken();
     }
 
