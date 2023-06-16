@@ -15,7 +15,7 @@ using namespace toy;
 namespace {
 
 // RAII helper to manage increasing/decreasing the indentation as we traverse
-// the AST
+// the AST.
 struct Indent {
     Indent(int &level) : level(level) { ++level; }
     ~Indent() { --level; }
@@ -45,7 +45,7 @@ private:
     void dump(FunctionAST *node);
     void dump(StructAST *node);
 
-    // Actually print spaces matching the current indentation level
+    // Actually print spaces matching the current indentation level.
     void indent() {
         for (int i = 0; i < curIndent; i++)
             llvm::errs() << "  ";
@@ -55,7 +55,7 @@ private:
     
 } // namespace
 
-/// Return a formatted string for the location of any node
+/// Return a formatted string for the location of any node.
 template <typename T>
 static std::string loc(T *node) {
     const auto &loc = node->loc();
@@ -64,13 +64,13 @@ static std::string loc(T *node) {
         .str();
 }
 
-// Helper Macro to bump the indentation and print the leading spaces for
-// the current indentaions
+// Helper macro to bump the indentation and print the leading spaces for
+// the current indentaions.
 #define INDENT()                        \
     Indent level_(curIndent);           \
     indent();
 
-/// Dispatch to a generic expressions to the appropriate subclass using RTTI
+/// Dispatch to a generic expressions to the appropriate subclass using RTTI.
 void ASTDumper::dump(ExprAST *expr) {
     llvm::TypeSwitch<ExprAST *>(expr)
         .Case<BinaryExprAST, CallExprAST, LiteralExprAST, NumberExprAST,
@@ -115,19 +115,19 @@ void ASTDumper::dump(NumberExprAST * num) {
 /// We print out such array with the dimensions spelled out at every level:
 /// <2,2>[<2>[1, 2], <2>[3, 4]]
 void printLitHelper(ExprAST *litOrNum) {
-    // Inside a literal expression we can have either a number or another literal
+    // Inside a literal expression we can have either a number or another literal.
     if (auto *num = llvm::dyn_cast<NumberExprAST>(litOrNum)) {
         llvm::errs() << num->getValue();
         return;
     }
     auto *literal = llvm::cast<LiteralExprAST>(litOrNum);
 
-    // Print the dimension for this literal first
+    // Print the dimension for this literal first.
     llvm::errs() << "<";
     llvm::interleaveComma(literal->getDims(), llvm::errs());
     llvm::errs() << ">";
 
-    // Print the content, recursing on every element of the list
+    // Print the content, recursing on every element of the list.
     llvm::errs() << "[";
     llvm::interleaveComma(literal->getValues(), llvm::errs(),
                           [&](auto &elt) { printLitHelper(elt.get()); });
@@ -145,11 +145,11 @@ void ASTDumper::dump(LiteralExprAST *node) {
 /// Print a struct liiteral.
 void ASTDumper::dump(StructLiteralExprAST *node) {
     INDENT();
-    llvm::errs() << "Struct Literal: ";
+    llvm::errs() << "Struct Literal: [\n";
     for (auto &value : node->getValues())
         dump(value.get());
     indent();
-    llvm::errs() << " " << loc(node) << "\n";
+    llvm::errs() << "] " << loc(node) << "\n";
 }
 
 /// Print a variable reference (just a name).
@@ -170,7 +170,7 @@ void ASTDumper::dump(ReturnExprAST *node) {
     }
 }
 
-/// Print a binary operation, first the operator, then recurse int LHS and RHS.
+/// Print a binary operation, first the operator, then recurse into LHS and RHS.
 void ASTDumper::dump(BinaryExprAST *node) {
     INDENT();
     llvm::errs() << "BinOp: " << node->getOp() << " " << loc(node) << "\n";
@@ -182,7 +182,7 @@ void ASTDumper::dump(BinaryExprAST *node) {
 /// recursing into each individual argument.
 void ASTDumper::dump(CallExprAST *node) {
     INDENT();
-    llvm::errs() << "Call '" << node->getCallee() << "' [" << loc(node) << "\n";
+    llvm::errs() << "Call '" << node->getCallee() << "' [ " << loc(node) << "\n";
     for (auto &arg : node->getArgs())
         dump(arg.get());
     indent();
@@ -245,7 +245,6 @@ void ASTDumper::dump(StructAST *node) {
 
 /// Print a module, actually loop over the funcions and print them in sequence.
 void ASTDumper::dump(ModuleAST *node) {
-    INDENT();
     llvm::errs() << "Module:\n";
     for (auto &record : *node) {
         if (FunctionAST *function = llvm::dyn_cast<FunctionAST>(record.get()))

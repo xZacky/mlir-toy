@@ -15,9 +15,6 @@
 #include "llvm/Support/raw_ostream.h"
 
 #include <map>
-#include <utility>
-#include <vector>
-#include <optional>
 
 namespace toy {
 
@@ -52,11 +49,11 @@ public:
         records.push_back(std::move(record));
     }
 
-    // If we didn't reach EOF, there was an error during parsing
-    if (lexer.getCurToken() != tok_eof)
-      return parseError<ModuleAST>("nothing", "at end of module");
+        // If we didn't reach EOF, there was an error during parsing.
+        if (lexer.getCurToken() != tok_eof)
+            return parseError<ModuleAST>("nothing", "at end of module");
 
-    return std::make_unique<ModuleAST>(std::move(records));
+        return std::make_unique<ModuleAST>(std::move(records));
     }
 
 private:
@@ -100,7 +97,7 @@ private:
         // Hold the dimensions for all the nesting inside this level.
         std::vector<int64_t> dims;
         do {
-            // We can have either another nested array or a number literal.
+            // We can have ethier another nested array or a number literal.
             if (lexer.getCurToken() == '[') {
                 values.push_back(parseTensorLiteralExpr());
                 if (!values.back())
@@ -129,7 +126,7 @@ private:
         /// Fill in the dimensions now. First the current nesting level:
         dims.push_back(values.size());
 
-        /// If there is any nested array, Process all of them and ensure that
+        /// If there is any nested array. process all of them and ensure that
         /// dimension are uniform.
         if (llvm::any_of(values, [](std::unique_ptr<ExprAST> &expr)
                          { return llvm::isa<LiteralExprAST>(expr.get()); })) {
@@ -236,12 +233,12 @@ private:
         }
         lexer.consume(Token(')'));
 
-        // It can be a builtin call to print
+        // It can be a builtin call to print.
         if (name == "print") {
             if (args.size() != 1)
                 return parseError<ExprAST>("<single arg>", "as argument to print()");
 
-        return std::make_unique<PrintExprAST>(loc, std::move(args[0]));
+            return std::make_unique<PrintExprAST>(std::move(loc), std::move(args[0]));
         }
 
         // Call to a user-defined function
@@ -256,7 +253,7 @@ private:
         std::string name(lexer.getId());
 
         auto loc = lexer.getLastLocation();
-        lexer.getNextToken(); // eat identifier.
+        lexer.getNextToken(); // eat identifier
 
         if (lexer.getCurToken() != '(') // Simple variable ref.
             return std::make_unique<VariableExprAST>(std::move(loc), name);
@@ -271,27 +268,27 @@ private:
     ///   ::= parenexpr
     ///   ::= tensorliteral
     std::unique_ptr<ExprAST> parsePrimary() {
-    switch (lexer.getCurToken()) {
-    default:
-        llvm::errs() << "unknown token '" << lexer.getCurToken()
-                     << "' when expecting an expression\n";
-        return nullptr;
-    case tok_identifier:
-        return parseIdentifierExpr();
-    case tok_number:
-        return parseNumberExpr();
-    case '(':
-        return parseParenExpr();
-    case '[':
-        return parseTensorLiteralExpr();
-    case '{':
-        return parseStructLiteralExpr();
-    case ';':
-        return nullptr;
-    case '}':
-        return nullptr;
+        switch (lexer.getCurToken()) {
+        default:
+            llvm::errs() << "unknown token '" << lexer.getCurToken()
+                         << "' when expecting an expression\n";
+            return nullptr;
+        case tok_identifier:
+            return parseIdentifierExpr();
+        case tok_number:
+            return parseNumberExpr();
+        case '(':
+            return parseParenExpr();
+        case '[':
+            return parseTensorLiteralExpr();
+        case '{':
+            return parseStructLiteralExpr();
+        case ';':
+            return nullptr;
+        case '}':
+            return nullptr;
+        }
     }
-  }
 
     /// Recursively parse the right hand side of a binary expression, the ExprPrec
     /// argument indicates the precedence of the current binary operator.
@@ -299,7 +296,7 @@ private:
     /// binoprhs ::= ('+' primary)*
     std::unique_ptr<ExprAST> parseBinOpRHS(int exprPrec,
                                            std::unique_ptr<ExprAST> lhs) {
-        // If this is a binop, ind its precedence.
+        // If this is a binop, find its precedence.
         while (true) {
             int tokPrec = getTokPrecedence();
 
@@ -436,8 +433,8 @@ private:
 
         if (lexer.getCurToken() != tok_identifier)
             return parseError<VarDeclExprAST>("identified",
-                                              "after 'var declaration");
-        
+                                              "after 'var' declaration");
+
         std::string id(lexer.getId());
         lexer.getNextToken(); // eat id
 
@@ -447,6 +444,7 @@ private:
             if (!type)
                 return nullptr;
         }
+
         if (!type)
             type = std::make_unique<VarType>();
 
@@ -485,7 +483,7 @@ private:
                 exprList->push_back(std::move(expr));
             } else if (lexer.getCurToken() == tok_var) {
                 // Variable declaration
-                auto varDecl = parseDeclaration(/*requireInitializer=*/true);
+                auto varDecl = parseDeclaration(/*requiresInitializer=*/true);
                 if (!varDecl)
                     return nullptr;
                 exprList->push_back(std::move(varDecl));
@@ -556,8 +554,8 @@ private:
                     name = std::string(lexer.getId());
                     lexer.consume(tok_identifier);
                 } else {
-                // Otherwise, we just parsed the name.
-                name = std::move(nameOrType);
+                    // Otherwise, we just parsed the name.
+                    name = std::move(nameOrType);
                 }
 
                 args.push_back(
@@ -573,7 +571,6 @@ private:
         if (lexer.getCurToken() != ')')
             return parseError<PrototypeAST>(")", "to end function prototype");
 
-        // success.
         lexer.consume(Token(')'));
         return std::make_unique<PrototypeAST>(std::move(loc), fnName,
                                               std::move(args));
@@ -650,7 +647,7 @@ private:
         }
     }
 
-    /// Helper function to signal errors while parsing, it takes ana argument
+    /// Helper function to signal errors while parsing, it takes an argument
     /// indicating the expected token and another argument giving more context.
     /// Location is retrieved from the lexer to enrich the error message.
     template <typename R, typename T, typename U = const char *>
