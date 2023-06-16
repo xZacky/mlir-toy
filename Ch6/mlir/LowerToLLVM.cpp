@@ -180,7 +180,7 @@ struct ToyToLLVMLoweringPass
 } // namespace
 
 void ToyToLLVMLoweringPass::runOnOperation() {
-    // The first thing to defin is the conversion target. This will define the
+    // The first thing to define is the conversion target. This will define the
     // final target for this lowering. For this lowering, we are only targeting
     // the LLVM dialect.
     LLVMConversionTarget target(getContext());

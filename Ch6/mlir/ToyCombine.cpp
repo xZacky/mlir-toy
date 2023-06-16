@@ -1,7 +1,7 @@
 //===---------------- ToyCombine.cpp - Toy High Level Optimizer ----------------===//
 //
 // This file implements as set of simple combiners for optimizaing operations in
-// The Toy dialect.
+// the Toy dialect.
 //
 //===---------------------------------------------------------------------------===//
 
@@ -32,7 +32,8 @@ struct SimplifyRedundantTranspose : public mlir::OpRewritePattern<TransposeOp> {
     /// argument is the orchestrator of the sequence of rewrites. The pattern is
     /// expected to interact with it to perform any changes to the IR from here.
     mlir::LogicalResult matchAndRewrite(TransposeOp op,
-                                  mlir::PatternRewriter & rewriter) const override {
+                                        mlir::PatternRewriter & rewriter)
+                                        const override {
         // Look through the input of the current transpose.
         mlir::Value transposeInput = op.getOperand();
         TransposeOp transposeInputOp = transposeInput.getDefiningOp<TransposeOp>();
@@ -57,7 +58,7 @@ void TransposeOp::getCanonicalizationPatterns(mlir::RewritePatternSet &results,
 /// Register our patterns as "canonicalization" patterns on the ReshapeOp so
 /// that they can be picked up by the Canonizalization framework.
 void ReshapeOp::getCanonicalizationPatterns(mlir::RewritePatternSet &results,
-                                              mlir::MLIRContext *context) {
+                                            mlir::MLIRContext *context) {
     results.add<ReshapeReshapeOptPattern, RedundantReshapeOptPattern,
                 FoldConstantReshapeOptPattern>(context);
 }

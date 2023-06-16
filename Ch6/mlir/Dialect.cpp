@@ -171,10 +171,10 @@ mlir::ParseResult ConstantOp::parse(mlir::OpAsmParser &parser,
     mlir::DenseElementsAttr value;
     if (parser.parseOptionalAttrDict(result.attributes) ||
         parser.parseAttribute(value, "value", result.attributes))
-        return failure();
+        return mlir::failure();
 
     result.addTypes(value.getType());
-    return success();
+    return mlir::success();
 }
 
 /// The `OpAsmPrinter` class is a stream that allows for formatting
@@ -192,7 +192,7 @@ mlir::LogicalResult ConstantOp::verify() {
     // must match the shape of the attribute holding the data.
     auto resultType = llvm::dyn_cast<mlir::RankedTensorType>(getResult().getType());
     if (!resultType)
-        return success();
+        return mlir::success();
 
     // Check that the rank of the attribute type matches the rank of the constant
     // result type.
@@ -232,9 +232,30 @@ mlir::ParseResult AddOp::parse(mlir::OpAsmParser &parser,
 
 void AddOp::print(mlir::OpAsmPrinter &p) { printBinaryOp(p, *this); }
 
-/// Infer the output shape of the CastOp, this is required by the shape
+/// Infer the output shape of the AddOp, this is required by the shape
 /// inference interfaces.
 void AddOp::inferShapes() { getResult().setType(getLhs().getType()); }
+
+//===------------------------------------------===//
+// SubOp
+//===------------------------------------------===//
+
+void SubOp::build(mlir::OpBuilder &builder, mlir::OperationState &state,
+                  mlir::Value lhs, mlir::Value rhs) {
+    state.addTypes(mlir::UnrankedTensorType::get(builder.getF64Type()));
+    state.addOperands({lhs, rhs});
+}
+
+mlir::ParseResult SubOp::parse(mlir::OpAsmParser &parser,
+                               mlir::OperationState &result) {
+    return parseBinaryOp(parser, result);
+}
+
+void SubOp::print(mlir::OpAsmPrinter &p) { printBinaryOp(p, *this); }
+
+/// Infer the output shape of the SubOp, this is required by the shape
+/// inference interfaces.
+void SubOp::inferShapes() { getResult().setType(getLhs().getType()); }
 
 //===------------------------------------------===//
 // CastOp
@@ -367,7 +388,7 @@ void MulOp::print(mlir::OpAsmPrinter &p) { printBinaryOp(p, *this); }
 void MulOp::inferShapes() { getResult().setType(getLhs().getType()); }
 
 //===------------------------------------------===//
-// Return Op
+// ReturnOp
 //===------------------------------------------===//
 
 mlir::LogicalResult ReturnOp::verify() {
