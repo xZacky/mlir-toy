@@ -5,7 +5,3 @@ add_llvm_executable(toyc-ch1
     parser/AST.cpp
 )
 include_directories(include/)
-target_link_libraries(toyc-ch1
-    PRIVATE
-        MLIRSupport
-)

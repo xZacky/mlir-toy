@@ -124,6 +124,7 @@ struct BinaryOpLowering : public mlir::ConversionPattern {
     }
 };
 using AddOpLowering = BinaryOpLowering<AddOp, mlir::arith::AddFOp>;
+using SubOpLowering = BinaryOpLowering<SubOp, mlir::arith::SubFOp>;
 using MulOpLowering = BinaryOpLowering<MulOp, mlir::arith::MulFOp>;
 
 //===----------------------------------------------===//
@@ -357,8 +358,8 @@ void ToyToAffineLoweringPass::runOnOperation() {
     // the set of patterns that will lower the Toy operations.
     mlir::RewritePatternSet patterns(&getContext());
     patterns.add<
-        AddOpLowering, ConstantOpLowering, FuncOpLowering, MulOpLowering,
-        PrintOpLowering, ReturnOpLowering, TransposeOpLowering
+        AddOpLowering, SubOpLowering, ConstantOpLowering, FuncOpLowering,
+        MulOpLowering, PrintOpLowering, ReturnOpLowering, TransposeOpLowering
     >(&getContext());
 
     // With the target and rewrite patterns defined, we can now attempt the
