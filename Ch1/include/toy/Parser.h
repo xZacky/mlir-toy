@@ -168,8 +168,7 @@ private:
         lexer.consume(Token('('));
         std::vector<std::unique_ptr<ExprAST>> args;
         if (lexer.getCurToken() != ')') {
-            while (true)
-            {
+            while (true) {
                 if (auto arg = parseExpression())
                     args.push_back(std::move(arg));
                 else
@@ -281,8 +280,7 @@ private:
 
         auto type = std::make_unique<VarType>();
 
-        while (lexer.getCurToken() == tok_number)
-        {
+        while (lexer.getCurToken() == tok_number) {
             type->shape.push_back(lexer.getValue());
             lexer.getNextToken();
             if (lexer.getCurToken() == ',')

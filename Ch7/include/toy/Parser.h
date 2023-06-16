@@ -43,11 +43,11 @@ public:
             default:
                 return parseError<ModuleAST>("'def' or 'struct'",
                                              "when parsing top level module records");
+            }
+            if (!record)
+                break;
+            records.push_back(std::move(record));
         }
-        if (!record)
-            break;
-        records.push_back(std::move(record));
-    }
 
         // If we didn't reach EOF, there was an error during parsing.
         if (lexer.getCurToken() != tok_eof)
@@ -97,7 +97,7 @@ private:
         // Hold the dimensions for all the nesting inside this level.
         std::vector<int64_t> dims;
         do {
-            // We can have ethier another nested array or a number literal.
+            // We can have either another nested array or a number literal.
             if (lexer.getCurToken() == '[') {
                 values.push_back(parseTensorLiteralExpr());
                 if (!values.back())
@@ -126,7 +126,7 @@ private:
         /// Fill in the dimensions now. First the current nesting level:
         dims.push_back(values.size());
 
-        /// If there is any nested array. process all of them and ensure that
+        /// If there is any nested array, process all of them and ensure that
         /// dimension are uniform.
         if (llvm::any_of(values, [](std::unique_ptr<ExprAST> &expr)
                          { return llvm::isa<LiteralExprAST>(expr.get()); })) {
@@ -372,7 +372,7 @@ private:
             return parseCallExpr(id, loc);
 
         // Otherwise, this is a variable declaration.
-            return parseTypedDeclaration(id, /*requiresInitializer=*/true, loc);
+        return parseTypedDeclaration(id, /*requiresInitializer=*/true, loc);
     }
 
     /// Parse a typed variable declaration.
