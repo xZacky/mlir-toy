@@ -1,3 +1,4 @@
+include_directories(include)
 add_subdirectory(include)
 
 add_llvm_executable(toyc-ch2
@@ -9,7 +10,6 @@ add_llvm_executable(toyc-ch2
   DEPENDS
   ToyCh2OpsIncGen
 )
-include_directories(include)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 target_link_libraries(toyc-ch2
   PRIVATE
