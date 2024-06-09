@@ -35,6 +35,5 @@ $ ninja
 ## Run Example
 
 ```
-$ cd build
-$ ./bin/toyc-ch1 ../test/ast.toy -emit=ast
+$ ./build/bin/toyc-ch1 test/Ch1/ast.toy -emit=ast
 ```
