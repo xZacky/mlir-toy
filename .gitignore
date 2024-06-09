@@ -1,2 +1,11 @@
-.vscode
+# builds
 build
+
+# clangd cache
+.cache
+
+# neovim
+.nvim.lua
+
+# vscode
+.vscode

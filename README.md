@@ -22,10 +22,6 @@ $ cmake -G Ninja ../llvm \
 $ ninja
 $ sudo ninja install
 ```
-If you want to use CUDA backend, you can add option:
-```
--DMLIR_ENABLE_CUDA_RUNNER=ON
-```
 
 ## Build Toy Tutorial
 
