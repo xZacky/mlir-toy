@@ -43,8 +43,7 @@ using namespace mlir::toy;
 // ToyInlinerInterface
 //===----------------------------------------------------------------------===//
 
-/// This class defines the interface for handling inlining with Toy
-/// operations.
+/// This class defines the interface for handling inlining with Toy operations.
 struct ToyInlinerInterface : public DialectInlinerInterface {
   using DialectInlinerInterface::DialectInlinerInterface;
 
@@ -63,7 +62,7 @@ struct ToyInlinerInterface : public DialectInlinerInterface {
     return true;
   }
 
-  // All functions within toy can be inlined.
+  /// All functions within toy can be inlined.
   bool isLegalToInline(Region *, Region *, bool, IRMapping &) const final {
     return true;
   }
@@ -86,8 +85,8 @@ struct ToyInlinerInterface : public DialectInlinerInterface {
 
   /// Attempts to materialize a conversion for a type mismatch between a call
   /// from this dialect, and a callable region. This method should generate an
-  /// operation that takes 'input' as the only operand, and produces a single
-  /// result of 'resultType'. If a conversion can not be generated, nullptr
+  /// operation that takes `input` as the only operand, and produces a single
+  /// result of `resultType`. If a conversion can not be generated, nullptr
   /// should be returned.
   Operation *materializeCallConversion(OpBuilder &builder, Value input,
                                        Type resultType,
@@ -101,7 +100,7 @@ struct ToyInlinerInterface : public DialectInlinerInterface {
 //===----------------------------------------------------------------------===//
 
 /// Dialect initialization, the instance will be owned by the context. This is
-/// the point of registration of types and operations for the dialect.
+/// the point of registeration types and operations for the dialect.
 void ToyDialect::initialize() {
   addOperations<
 #define GET_OP_LIST
@@ -115,7 +114,7 @@ void ToyDialect::initialize() {
 //===----------------------------------------------------------------------===//
 
 /// A generalized parser for binary operations. This parses the different forms
-/// of 'printBinaryOp' below.
+/// of `printBinaryOp` below.
 static mlir::ParseResult parseBinaryOp(mlir::OpAsmParser &parser,
                                        mlir::OperationState &result) {
   SmallVector<mlir::OpAsmParser::UnresolvedOperand, 2> operands;
@@ -135,7 +134,6 @@ static mlir::ParseResult parseBinaryOp(mlir::OpAsmParser &parser,
     result.addTypes(funcType.getResults());
     return mlir::success();
   }
-
   // Otherwise, the parsed type is the type of both operands and results.
   if (parser.resolveOperands(operands, type, result.operands))
     return mlir::failure();
@@ -143,8 +141,8 @@ static mlir::ParseResult parseBinaryOp(mlir::OpAsmParser &parser,
   return mlir::success();
 }
 
-/// A generalized printer for binary operations. It prints in two different
-/// forms depending on if all of the types match.
+/// A generalized priner for binary operations. It prints in two different forms
+/// depending on if all of the types match.
 static void printBinaryOp(mlir::OpAsmPrinter &printer, mlir::Operation *op) {
   printer << " " << op->getOperands();
   printer.printOptionalAttrDict(op->getAttrs());
@@ -171,18 +169,18 @@ static void printBinaryOp(mlir::OpAsmPrinter &printer, mlir::Operation *op) {
 /// expected to fill in order to build the operation.
 void ConstantOp::build(mlir::OpBuilder &builder, mlir::OperationState &state,
                        double value) {
-  auto dataType = RankedTensorType::get({}, builder.getF64Type());
+  auto dataType = RankedTensorType::get(std::nullopt, builder.getF64Type());
   auto dataAttribute = DenseElementsAttr::get(dataType, value);
   ConstantOp::build(builder, state, dataType, dataAttribute);
 }
 
-/// The 'OpAsmPrinter' class provides a collection of methods for parsing
-/// various punctuation, as well as attributes, operands, types, etc. Each of
-/// these methods returns a `ParseResult`. This class is a wrapper around
+/// The `OpAsmParser` class provides a collection of methods for parsing various
+/// punctuation, as well as attributes, operands, types, etc. Each of these
+/// methods returns a `ParseResult`, this class is a wrapper around
 /// `LogicalResult` that can be converted to a boolean `true` value on failure,
 /// or `false` on success. This allows for easily chaining together a set of
 /// parser rules. These rules are used to populate an `mlir::OperationState`
-/// similarly to the `build` methods described above.
+/// similarly ro the `build` methods described above.
 mlir::ParseResult ConstantOp::parse(mlir::OpAsmParser &parser,
                                     mlir::OperationState &result) {
   mlir::DenseElementsAttr value;
@@ -194,8 +192,8 @@ mlir::ParseResult ConstantOp::parse(mlir::OpAsmParser &parser,
   return success();
 }
 
-/// The 'OpAsmPrinter' class is a stream that allows for formatting
-/// strings, attributes, operands, types, etc.
+/// The `OpAsmPrinter` class is a stream that allows for formatting strings,
+/// attributes, operands, types, etc.
 void ConstantOp::print(mlir::OpAsmPrinter &printer) {
   printer << " ";
   printer.printOptionalAttrDict((*this)->getAttrs(), /*elidedAttrs=*/{"value"});
@@ -225,7 +223,7 @@ mlir::LogicalResult ConstantOp::verify() {
   for (int dim = 0, dimE = attrType.getRank(); dim < dimE; ++dim) {
     if (attrType.getShape()[dim] != resultType.getShape()[dim]) {
       return emitOpError(
-                 "return type shape mismatches its attribute at dimension ")
+                 "return type shape mismatches its attribute at dimension")
              << dim << ": " << attrType.getShape()[dim]
              << " != " << resultType.getShape()[dim];
     }
@@ -248,7 +246,9 @@ mlir::ParseResult AddOp::parse(mlir::OpAsmParser &parser,
   return parseBinaryOp(parser, result);
 }
 
-void AddOp::print(mlir::OpAsmPrinter &p) { printBinaryOp(p, *this); }
+void AddOp::print(mlir::OpAsmPrinter &printer) {
+  printBinaryOp(printer, *this);
+}
 
 /// Infer the output shape of the AddOp, this is required by the shape inference
 /// interface.
@@ -305,11 +305,11 @@ mlir::ParseResult FuncOp::parse(mlir::OpAsmParser &parser,
       getArgAttrsAttrName(result.name), getResAttrsAttrName(result.name));
 }
 
-void FuncOp::print(mlir::OpAsmPrinter &p) {
-  // Dispatch to the FunctionOpInterface provided utility method that prints the
+void FuncOp::print(mlir::OpAsmPrinter &printer) {
+  // Dispatch to the FunctionOpinterface provided utility method that prints the
   // function operation.
   mlir::function_interface_impl::printFunctionOp(
-      p, *this, /*isVariadic=*/false, getFunctionTypeAttrName(),
+      printer, *this, /*isVariadic=*/false, getFunctionTypeAttrName(),
       getArgAttrsAttrName(), getResAttrsAttrName());
 }
 
@@ -326,7 +326,7 @@ void GenericCallOp::build(mlir::OpBuilder &builder, mlir::OperationState &state,
                      mlir::SymbolRefAttr::get(builder.getContext(), callee));
 }
 
-/// Return the callee of the generic call operation, this is required by the
+/// Returns the callee of the generic call operation, this is required by the
 /// call interface.
 CallInterfaceCallable GenericCallOp::getCallableForCallee() {
   return (*this)->getAttrOfType<SymbolRefAttr>("callee");
@@ -363,7 +363,9 @@ mlir::ParseResult MulOp::parse(mlir::OpAsmParser &parser,
   return parseBinaryOp(parser, result);
 }
 
-void MulOp::print(mlir::OpAsmPrinter &p) { printBinaryOp(p, *this); }
+void MulOp::print(mlir::OpAsmPrinter &printer) {
+  printBinaryOp(printer, *this);
+}
 
 /// Infer the output shape of the MulOp, this is required by the shape inference
 /// interface.
@@ -378,12 +380,12 @@ mlir::LogicalResult ReturnOp::verify() {
   // trait attached to the operation definition.
   auto function = cast<FuncOp>((*this)->getParentOp());
 
-  /// ReturnOps can only have a single optional operand.
+  // ReturnOps can only have a single optional operand.
   if (getNumOperands() > 1)
     return emitOpError() << "expects at most 1 return operand";
 
   // The operand number and types must match the function signature.
-  auto results = function.getFunctionType().getResults();
+  const auto &results = function.getFunctionType().getResults();
   if (getNumOperands() != results.size())
     return emitOpError() << "does not return the same number of values ("
                          << getNumOperands() << ") as the enclosing function ("
@@ -432,8 +434,7 @@ mlir::LogicalResult TransposeOp::verify() {
   auto inputShape = inputType.getShape();
   if (!std::equal(inputShape.begin(), inputShape.end(),
                   resultType.getShape().rbegin())) {
-    return emitError()
-           << "expected result shape to be a transpose of the input";
+    return emitError("expected result shape to be a transpose of the input");
   }
   return mlir::success();
 }
